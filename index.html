@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusGigs — Find Skilled Help Around Campus</title>
+  <meta name="description" content="Connect with tutors, programmers, designers, and freelancers around your university.">
+
+  <!-- Fonts: Fraunces (display), Inter (body/UI), JetBrains Mono (stamp/code accents) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ============ HEADER / NAV ============ -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#top" class="logo">
+        <span class="logo-mark">CG</span>
+        <span class="logo-text">Campus<em>Gigs</em></span>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary">
+        <a href="#browse">Browse</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#post-request">Post a request</a>
+        <a href="#" id="open-messages-nav" class="auth-only-nav" hidden>Messages</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-ghost auth-only-nav" id="open-profile-form" hidden>My profile</button>
+        <button class="btn btn-ghost" id="open-account-form">Log in</button>
+        <button class="btn btn-primary header-cta" id="open-listing-form">List your skill</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow-stamp">NOW SERVING THE CAMPUS QUAD</p>
+        <h1 class="hero-title">
+          Need help with something?<br>
+          Someone on campus<br>
+          already knows how.
+        </h1>
+        <p class="hero-sub">
+          Search the board for tutors, coders, designers and freelancers studying right around you —
+          or list your own skill and start picking up gigs between classes.
+        </p>
+
+        <form class="hero-search" id="hero-search-form" role="search">
+          <div class="search-field">
+            <label for="hero-search-input" class="sr-only">What do you need help with?</label>
+            <input
+              type="text"
+              id="hero-search-input"
+              placeholder="Try “calculus tutor”, “logo design”, “React help”…"
+              autocomplete="off"
+            >
+          </div>
+          <select id="hero-category-select" aria-label="Filter by category">
+            <option value="all">All categories</option>
+            <option value="tutoring">Tutoring</option>
+            <option value="programming">Programming</option>
+            <option value="design">Design</option>
+            <option value="freelance">Freelance / Other</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Search the board</button>
+        </form>
+
+        <div class="hero-stats" id="hero-stats" aria-label="Board statistics">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <div class="hero-pin" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="10"/></svg>
+      </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="section-inner">
+        <h2 class="section-title">How the board works</h2>
+        <div class="steps">
+          <article class="step-card">
+            <span class="step-code">STEP / FIND</span>
+            <h3>Search the listings</h3>
+            <p>Filter by subject, skill, price or how far they are from campus. Every listing is a real student or local worker.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-code">STEP / CHECK</span>
+            <h3>Read their card</h3>
+            <p>Ratings, past gigs, response time and rate are all on the card — no surprises once you reach out.</p>
+          </article>
+          <article class="step-card">
+            <span class="step-code">STEP / CONNECT</span>
+            <h3>Send a request</h3>
+            <p>Message them directly through the board with what you need. They accept, and you sort out the rest.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ BROWSE / LISTINGS ============ -->
+    <section class="browse" id="browse">
+      <div class="section-inner">
+        <div class="browse-header">
+          <div>
+            <h2 class="section-title">The board, right now</h2>
+            <p class="browse-sub" id="results-count">Showing all listings</p>
+          </div>
+
+          <div class="filter-bar" role="group" aria-label="Filter by category">
+            <button class="filter-chip is-active" data-filter="all">All</button>
+            <button class="filter-chip" data-filter="tutoring">Tutoring</button>
+            <button class="filter-chip" data-filter="programming">Programming</button>
+            <button class="filter-chip" data-filter="design">Design</button>
+            <button class="filter-chip" data-filter="freelance">Freelance</button>
+          </div>
+        </div>
+
+        <div class="sort-row">
+          <label for="sort-select">Sort by</label>
+          <select id="sort-select">
+            <option value="rating">Highest rated</option>
+            <option value="price-asc">Price: low to high</option>
+            <option value="price-desc">Price: high to low</option>
+            <option value="distance">Closest to campus</option>
+          </select>
+        </div>
+
+        <div class="worker-grid" id="worker-grid">
+          <!-- Worker cards injected by JS -->
+        </div>
+
+        <p class="no-results" id="no-results" hidden>
+          No one on the board matches that search yet. Try a different word, or
+          <button type="button" class="link-btn" id="clear-filters-btn">clear your filters</button>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ POST A REQUEST ============ -->
+    <section class="post-request" id="post-request">
+      <div class="section-inner two-col">
+        <div class="post-copy">
+          <p class="eyebrow-stamp">CAN'T FIND THE RIGHT FIT?</p>
+          <h2 class="section-title">Post what you need</h2>
+          <p>
+            Describe the job and people on the board can come to you instead.
+            Good for one-off tasks, odd hours, or skills that don't fit neatly into a category.
+          </p>
+        </div>
+
+        <form class="request-form" id="request-form">
+          <div class="form-row">
+            <label for="req-title">What do you need done?</label>
+            <input type="text" id="req-title" placeholder="e.g. Proofread a 12-page thesis chapter" required>
+          </div>
+
+          <div class="form-row two-up">
+            <div>
+              <label for="req-category">Category</label>
+              <select id="req-category" required>
+                <option value="" disabled selected>Choose one</option>
+                <option value="tutoring">Tutoring</option>
+                <option value="programming">Programming</option>
+                <option value="design">Design</option>
+                <option value="freelance">Freelance / Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="req-budget">Budget (per hour, Tsh)</label>
+              <input type="number" id="req-budget" min="0" step="1000" placeholder="20000" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <label for="req-details">Details</label>
+            <textarea id="req-details" rows="4" placeholder="Deadlines, format, anything they should know before reaching out." required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">Post to the board</button>
+          <p class="form-note" id="request-confirmation" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <!-- The requests board: every open request, newest first -->
+      <div class="section-inner requests-board-wrap">
+        <h3 class="requests-board-title">Open requests right now</h3>
+        <div class="request-grid" id="request-grid">
+          <!-- Request cards injected by JS -->
+        </div>
+        <p class="no-results" id="no-requests" hidden>No one has posted a request yet — be the first.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ ACCOUNT MODAL (sign up / log in) ============ -->
+  <div class="modal-overlay" id="account-modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="account-modal-title">
+      <button class="modal-close" id="close-account-form" aria-label="Close form">&times;</button>
+
+      <div class="account-tabs" role="tablist">
+        <button class="account-tab is-active" id="tab-signup" role="tab" aria-selected="true">Sign up</button>
+        <button class="account-tab" id="tab-login" role="tab" aria-selected="false">Log in</button>
+      </div>
+
+      <h2 id="account-modal-title" class="sr-only">Create an account or log in</h2>
+
+      <!-- Google sign-in via Supabase Auth (redirects to Google and back) -->
+      <button type="button" class="btn btn-google btn-block" id="google-signin-button">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.12-.84 2.07-1.79 2.71v2.26h2.9c1.7-1.56 2.69-3.87 2.69-6.61z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.81 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.41 5.41 0 0 1 3.68 9c0-.59.1-1.17.27-1.7V4.97H.96A8.96 8.96 0 0 0 0 9c0 1.45.35 2.82.96 4.03l2.99-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.97l2.99 2.33C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+      <p class="google-signin-fallback" id="google-signin-fallback" hidden>
+        Google sign-in isn't configured for this Supabase project yet — use email below,
+        or enable the Google provider under Authentication → Providers in your Supabase dashboard.
+      </p>
+
+      <div class="divider"><span>or use your email</span></div>
+
+      <!-- SIGN UP FORM -->
+      <form id="signup-form" class="account-form">
+        <div class="form-row">
+          <label for="su-name">Name</label>
+          <input type="text" id="su-name" required placeholder="e.g. Amara K.">
+        </div>
+        <div class="form-row">
+          <label for="su-email">University or personal email</label>
+          <input type="email" id="su-email" required placeholder="you@university.edu">
+        </div>
+        <div class="form-row">
+          <label for="su-password">Password</label>
+          <input type="password" id="su-password" required minlength="8" placeholder="At least 8 characters">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Create account</button>
+        <p class="form-note" id="signup-error" role="alert"></p>
+      </form>
+
+      <!-- LOG IN FORM -->
+      <form id="login-form" class="account-form" hidden>
+        <div class="form-row">
+          <label for="li-email">Email</label>
+          <input type="email" id="li-email" required placeholder="you@university.edu">
+        </div>
+        <div class="form-row">
+          <label for="li-password">Password</label>
+          <input type="password" id="li-password" required placeholder="Your password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        <p class="form-note" id="login-error" role="alert"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ LIST-YOUR-SKILL MODAL ============ -->
+  <div class="modal-overlay" id="listing-modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <button class="modal-close" id="close-listing-form" aria-label="Close form">&times;</button>
+      <p class="eyebrow-stamp">JOIN THE BOARD</p>
+      <h2 id="modal-title">List your skill</h2>
+
+      <form id="listing-form">
+        <div class="form-row">
+          <label for="l-name">Your name</label>
+          <input type="text" id="l-name" required placeholder="e.g. Amara K.">
+        </div>
+
+        <div class="form-row two-up">
+          <div>
+            <label for="l-category">Category</label>
+            <select id="l-category" required>
+              <option value="" disabled selected>Choose one</option>
+              <option value="tutoring">Tutoring</option>
+              <option value="programming">Programming</option>
+              <option value="design">Design</option>
+              <option value="freelance">Freelance / Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="l-rate">Rate (Tsh/hr)</label>
+            <input type="number" id="l-rate" min="0" step="1000" required placeholder="15000">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label for="l-skill">Headline skill</label>
+          <input type="text" id="l-skill" required placeholder="e.g. Organic Chemistry Tutoring">
+        </div>
+
+        <div class="form-row">
+          <label for="l-bio">Short bio</label>
+          <textarea id="l-bio" rows="3" required placeholder="What you help with and your experience."></textarea>
+        </div>
+
+        <div class="form-row">
+          <label for="l-distance">Distance from campus (miles)</label>
+          <input type="number" id="l-distance" min="0" step="0.1" required placeholder="0.5">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Add me to the board</button>
+        <p class="form-note" id="listing-confirmation" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ WORKER DETAIL MODAL ============ -->
+  <div class="modal-overlay" id="detail-modal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="detail-name">
+      <button class="modal-close" id="close-detail-modal" aria-label="Close">&times;</button>
+      <div id="detail-content"><!-- Filled by JS --></div>
+    </div>
+  </div>
+
+  <!-- ============ PROFILE MODAL (view/edit own, view others') ============ -->
+  <div class="modal-overlay" id="profile-modal" hidden>
+    <div class="modal-card modal-card-wide" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+      <button class="modal-close" id="close-profile-modal" aria-label="Close">&times;</button>
+      <h2 id="profile-modal-title" class="sr-only">Profile</h2>
+      <div id="profile-content"><!-- Filled by JS: either the editable form or a read-only public view --></div>
+    </div>
+  </div>
+
+  <!-- ============ MESSAGES MODAL (conversation list + active chat) ============ -->
+  <div class="modal-overlay" id="messages-modal" hidden>
+    <div class="modal-card modal-card-wide" role="dialog" aria-modal="true" aria-labelledby="messages-modal-title">
+      <button class="modal-close" id="close-messages-modal" aria-label="Close">&times;</button>
+      <h2 id="messages-modal-title" class="sr-only">Messages</h2>
+      <div class="messages-layout">
+        <div class="conversation-list" id="conversation-list">
+          <!-- Filled by JS: list of people this user has messaged -->
+        </div>
+        <div class="chat-pane" id="chat-pane">
+          <p class="chat-empty-state">Select a conversation, or message someone from their listing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>CampusGigs — built for the quad, not the cloud.</span>
+      <span>&copy; <span id="footer-year"></span></span>
+    </div>
+  </footer>
+
+  <!-- Supabase client library (UMD build, no bundler needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <script src="supabase-config.js"></script>
+  <script src="auth.js"></script>
+  <script src="profile.js"></script>
+  <script src="messages.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
