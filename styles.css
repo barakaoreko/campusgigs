@@ -206,8 +206,30 @@ textarea:focus-visible {
 }
 .main-nav a:hover { color: var(--ink); border-color: var(--terracotta); }
 
-@media (max-width: 760px) {
+/* Mobile portrait only: the horizontal nav links and the desktop action
+   buttons don't fit, so they're replaced by a hamburger + slide-out
+   sidebar (see ".hamburger-btn" and ".mobile-sidebar" below). Tablets
+   and phones in landscape keep the normal desktop-style header. */
+@media (max-width: 760px) and (orientation: portrait) {
   .main-nav { display: none; }
+  .header-actions .btn { display: none; }
+}
+
+.hamburger-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-strong);
+  background: var(--paper-raised);
+  color: var(--ink);
+  flex-shrink: 0;
+}
+.hamburger-btn:hover { background: var(--sage-bg); }
+@media (max-width: 760px) and (orientation: portrait) {
+  .hamburger-btn { display: flex; }
 }
 
 .header-actions {
@@ -217,6 +239,260 @@ textarea:focus-visible {
 }
 @media (max-width: 480px) {
   .header-actions .btn { padding: 10px 14px; font-size: 0.85rem; }
+}
+
+/* ---------- Mobile sidebar — dark, right-side, reference design ---------- */
+
+/* Sidebar-specific tokens (dark theme, independent of the site's light palette) */
+:root {
+  --sb-bg:          #1E1F26;
+  --sb-bg-elevated: #26272F;
+  --sb-active:      #7B6B8D;   /* mauve/purple highlight from the reference */
+  --sb-text:        #E8E8F0;
+  --sb-text-muted:  #9191A4;
+  --sb-border:      rgba(255,255,255,0.07);
+  --sb-radius:      10px;
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 90;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.sidebar-overlay[hidden] { display: none; }
+.sidebar-overlay.is-visible { opacity: 1; }
+
+.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;        /* RIGHT side, matching the reference */
+  bottom: 0;
+  width: min(82vw, 300px);
+  background: var(--sb-bg);
+  border-left: 1px solid var(--sb-border);
+  z-index: 95;
+  display: flex;
+  flex-direction: column;
+  /* Slides in from the right: starts off-screen right, animates to 0 */
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s ease;
+  box-shadow: -8px 0 32px rgba(0,0,0,0.35);
+  overflow: hidden;
+}
+.mobile-sidebar.is-open {
+  transform: translateX(0);
+  visibility: visible;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mobile-sidebar { transition: none; }
+  .sidebar-overlay { transition: none; }
+}
+
+/* ---- Header: brand + close button ---- */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 18px 16px;
+  flex-shrink: 0;
+}
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.sidebar-brand-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--terracotta);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-brand-icon .logo-mark {
+  background: transparent;
+  color: #fff;
+  font-size: 0.72rem;
+  padding: 0;
+}
+.sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.sidebar-brand-name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--sb-text);
+  line-height: 1.2;
+}
+.sidebar-brand-sub {
+  font-size: 0.73rem;
+  color: var(--sb-text-muted);
+  font-family: var(--font-body);
+}
+.sidebar-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: var(--sb-bg-elevated);
+  color: var(--sb-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.sidebar-close-btn:hover { background: rgba(255,255,255,0.1); color: var(--sb-text); }
+
+/* ---- Search bar ---- */
+.sidebar-search-wrap {
+  padding: 4px 14px 14px;
+  flex-shrink: 0;
+}
+.sidebar-search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--sb-bg-elevated);
+  border-radius: var(--sb-radius);
+  padding: 10px 14px;
+  border: 1px solid var(--sb-border);
+}
+.sidebar-search-icon { color: var(--sb-text-muted); flex-shrink: 0; }
+.sidebar-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--sb-text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  outline: none;
+  width: 100%;
+}
+.sidebar-search-input::placeholder { color: var(--sb-text-muted); }
+
+/* ---- Nav links ---- */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 10px;
+  overflow-y: auto;
+  flex: 1;
+  gap: 2px;
+}
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: var(--sb-radius);
+  border: none;
+  background: none;
+  color: var(--sb-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.sidebar-link svg { flex-shrink: 0; color: inherit; opacity: 0.75; }
+.sidebar-link:hover {
+  background: var(--sb-bg-elevated);
+  color: var(--sb-text);
+}
+.sidebar-link:hover svg { opacity: 1; }
+.sidebar-link:focus-visible {
+  outline: 2px solid var(--sb-active);
+  outline-offset: -2px;
+}
+
+/* Active/selected link — matches the mauve highlight from the reference */
+.sidebar-link-active,
+.sidebar-link-active:hover {
+  background: var(--sb-active);
+  color: #fff;
+}
+.sidebar-link-active svg { opacity: 1; }
+
+/* "List your skill" CTA — uses the site's terracotta, stands out in the dark sidebar */
+.sidebar-link-cta {
+  background: var(--terracotta);
+  color: #fff;
+  margin-top: 4px;
+}
+.sidebar-link-cta svg { color: #fff; opacity: 1; }
+.sidebar-link-cta:hover { background: var(--terracotta-dark); color: #fff; }
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--sb-border);
+  margin: 8px 4px;
+}
+
+/* ---- Bottom user card ---- */
+.sidebar-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-top: 1px solid var(--sb-border);
+  flex-shrink: 0;
+  background: var(--sb-bg);
+}
+.sidebar-user-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--sb-active);
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.sidebar-user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.sidebar-user-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--sb-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-user-status {
+  font-size: 0.74rem;
+  color: var(--sb-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ---------- Hero ---------- */

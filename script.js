@@ -64,6 +64,42 @@
     document.querySelectorAll(".auth-only-nav").forEach((el) => {
       el.hidden = !loggedIn;
     });
+
+    const user = window.CampusGigsAuth?.getCurrentUser();
+
+    // Sync the desktop header login/logout button label.
+    const sidebarLoginLabel = document.getElementById("sidebar-login-label");
+    if (sidebarLoginLabel) {
+      sidebarLoginLabel.textContent = user
+        ? `Log out (${user.name.split(" ")[0]})`
+        : "Log in";
+    }
+
+    // Update the bottom user card in the dark sidebar.
+    const avatarEl  = document.getElementById("sidebar-user-avatar");
+    const nameEl    = document.getElementById("sidebar-user-name");
+    const statusEl  = document.getElementById("sidebar-user-status");
+    const wsLabel   = document.getElementById("sidebar-workspace-label");
+
+    if (avatarEl && nameEl && statusEl) {
+      if (user) {
+        const initials = user.name
+          .split(" ")
+          .map((p) => p[0])
+          .slice(0, 2)
+          .join("")
+          .toUpperCase();
+        avatarEl.textContent = initials;
+        nameEl.textContent   = user.name;
+        statusEl.textContent = `online · ${user.email}`;
+        if (wsLabel) wsLabel.textContent = "Campus workspace";
+      } else {
+        avatarEl.textContent = "?";
+        nameEl.textContent   = "Guest";
+        statusEl.textContent = "Not signed in";
+        if (wsLabel) wsLabel.textContent = "Workspace";
+      }
+    }
   }
   document.addEventListener("campusgigs:auth-changed", () => {
     reflectAuthInNav();
@@ -599,12 +635,146 @@
     setTimeout(() => { requestConfirmation.textContent = ""; }, 4000);
   });
 
-  /* ---------- Misc: escape key closes any open modal ---------- */
+  /* ---------- Misc: escape key closes any open modal or sidebar ---------- */
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (!detailModal.hidden) closeDetailModal();
     if (!listingModal.hidden) closeListingModal();
+    if (document.getElementById("mobile-sidebar").classList.contains("is-open")) closeSidebar();
+  });
+
+  /* =========================================================
+     MOBILE SIDEBAR — open/close, focus trap, button wiring
+     HTML and CSS are already fully built; this is purely the
+     JS layer that makes it interactive.
+     ========================================================= */
+
+  const sidebar        = document.getElementById("mobile-sidebar");
+  const sidebarOverlay = document.getElementById("sidebar-overlay");
+  const openSidebarBtn = document.getElementById("open-mobile-nav");
+  const closeSidebarBtn = document.getElementById("close-mobile-nav");
+
+  /** All focusable elements inside the sidebar, for focus trapping. */
+  function getFocusableElements() {
+    return Array.from(
+      sidebar.querySelectorAll(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => !el.closest("[hidden]"));
+  }
+
+  function openSidebar() {
+    sidebar.classList.add("is-open");
+    sidebar.setAttribute("aria-hidden", "false");
+
+    // Remove hidden attribute before making visible (hidden prevents transitions).
+    sidebarOverlay.removeAttribute("hidden");
+    // Flush the removal so the browser registers the element before opacity starts.
+    requestAnimationFrame(() => sidebarOverlay.classList.add("is-visible"));
+
+    openSidebarBtn.setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden"; // prevent scroll-behind
+
+    // Move focus into the sidebar so keyboard/screen-reader users are in context.
+    const firstFocusable = getFocusableElements()[0];
+    if (firstFocusable) firstFocusable.focus();
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove("is-open");
+    sidebar.setAttribute("aria-hidden", "true");
+
+    sidebarOverlay.classList.remove("is-visible");
+    // Re-add hidden after the CSS opacity transition finishes (250ms in CSS).
+    setTimeout(() => sidebarOverlay.setAttribute("hidden", ""), 260);
+
+    openSidebarBtn.setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
+
+    // Return focus to the trigger that opened the sidebar.
+    openSidebarBtn.focus();
+  }
+
+  /** Focus trap: keep Tab/Shift+Tab cycling inside the sidebar while open. */
+  sidebar.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab") return;
+    const focusable = getFocusableElements();
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last  = focusable[focusable.length - 1];
+
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  openSidebarBtn.addEventListener("click", openSidebar);
+  closeSidebarBtn.addEventListener("click", closeSidebar);
+  sidebarOverlay.addEventListener("click", closeSidebar);
+
+  /** Sidebar search: mirrors the hero search bar. */
+  const sidebarSearchForm  = document.getElementById("sidebar-search-form");
+  const sidebarSearchInput = document.getElementById("sidebar-search-input");
+  if (sidebarSearchForm) {
+    sidebarSearchForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const term = sidebarSearchInput.value.trim();
+      if (term) {
+        heroSearchInput.value = term;
+        activeSearchTerm = term.toLowerCase();
+        renderGrid();
+      }
+      closeSidebar();
+      document.getElementById("browse").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  /** All sidebar nav links: close the sidebar when tapped, update active state. */
+  sidebar.querySelectorAll("[data-sidebar-link]").forEach((el) => {
+    el.addEventListener("click", () => {
+      // Move the active highlight to whichever link was just clicked
+      // (only for anchor links, not the button actions like login/logout).
+      if (el.tagName === "A") {
+        sidebar.querySelectorAll(".sidebar-link-active").forEach((a) => {
+          a.classList.remove("sidebar-link-active");
+        });
+        el.classList.add("sidebar-link-active");
+      }
+      closeSidebar();
+    });
+  });
+
+  /** Sidebar buttons that mirror the desktop header buttons. */
+
+  // "Log in" / "Log out" button
+  document.getElementById("sidebar-login-btn").addEventListener("click", () => {
+    closeSidebar();
+    const btn = document.getElementById("open-account-form");
+    if (btn) btn.click();
+  });
+
+  // "List your skill" button
+  document.getElementById("sidebar-list-skill-btn").addEventListener("click", () => {
+    closeSidebar();
+    const btn = document.getElementById("open-listing-form");
+    if (btn) btn.click();
+  });
+
+  // "My profile" button (auth-only, hidden when logged out)
+  document.getElementById("sidebar-profile-btn").addEventListener("click", () => {
+    closeSidebar();
+    if (window.CampusGigsProfile) window.CampusGigsProfile.showOwnProfile();
+  });
+
+  // "Messages" link (auth-only, hidden when logged out)
+  document.getElementById("sidebar-messages-link").addEventListener("click", (e) => {
+    e.preventDefault();
+    closeSidebar();
+    if (window.CampusGigsMessages) window.CampusGigsMessages.openMessages();
   });
 
   /* ---------- Footer year ---------- */

@@ -34,9 +34,105 @@
         <button class="btn btn-ghost auth-only-nav" id="open-profile-form" hidden>My profile</button>
         <button class="btn btn-ghost" id="open-account-form">Log in</button>
         <button class="btn btn-primary header-cta" id="open-listing-form">List your skill</button>
+        <button class="hamburger-btn" id="open-mobile-nav" aria-label="Open menu" aria-haspopup="true" aria-expanded="false" aria-controls="mobile-sidebar">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
       </div>
     </div>
   </header>
+
+  <!-- ============ MOBILE SIDEBAR (portrait phones only; see styles.css) ============ -->
+  <div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+  <aside class="mobile-sidebar" id="mobile-sidebar" aria-label="Mobile navigation" aria-hidden="true">
+
+    <!-- Top: brand/user info header -->
+    <div class="sidebar-header">
+      <div class="sidebar-brand">
+        <span class="sidebar-brand-icon">
+          <span class="logo-mark" style="font-size:0.78rem;padding:4px 7px;">CG</span>
+        </span>
+        <div class="sidebar-brand-text">
+          <span class="sidebar-brand-name">CampusGigs</span>
+          <span class="sidebar-brand-sub" id="sidebar-workspace-label">Workspace</span>
+        </div>
+      </div>
+      <button class="sidebar-close-btn" id="close-mobile-nav" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Search bar -->
+    <div class="sidebar-search-wrap">
+      <form class="sidebar-search-form" role="search" id="sidebar-search-form">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" class="sidebar-search-icon">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/>
+          <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input type="text" class="sidebar-search-input" id="sidebar-search-input" placeholder="Search" autocomplete="off" aria-label="Search listings">
+      </form>
+    </div>
+
+    <!-- Nav links -->
+    <nav class="sidebar-nav" aria-label="Mobile primary">
+
+      <a href="#top" class="sidebar-link sidebar-link-active" data-sidebar-link>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" stroke-width="2" fill="none" stroke-linejoin="round"/><path d="M9 21V12h6v9" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+        Home
+      </a>
+
+      <a href="#browse" class="sidebar-link" data-sidebar-link>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2" fill="none"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Browse
+      </a>
+
+      <a href="#how-it-works" class="sidebar-link" data-sidebar-link>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 7v5l3 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        How it works
+      </a>
+
+      <a href="#post-request" class="sidebar-link" data-sidebar-link>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        Post a request
+      </a>
+
+      <a href="#" class="sidebar-link auth-only-nav" id="sidebar-messages-link" data-sidebar-link hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round" fill="none"/></svg>
+        Messages
+      </a>
+
+      <div class="sidebar-divider"></div>
+
+      <button type="button" class="sidebar-link auth-only-nav" id="sidebar-profile-btn" data-sidebar-link hidden>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2" fill="none"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        My profile
+      </button>
+
+      <button type="button" class="sidebar-link" id="sidebar-login-btn" data-sidebar-link>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        <span id="sidebar-login-label">Log in</span>
+      </button>
+
+      <button type="button" class="sidebar-link sidebar-link-cta" id="sidebar-list-skill-btn" data-sidebar-link>
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        List your skill
+      </button>
+
+    </nav>
+
+    <!-- Bottom: logged-in user card -->
+    <div class="sidebar-user-card" id="sidebar-user-card">
+      <div class="sidebar-user-avatar" id="sidebar-user-avatar" aria-hidden="true">?</div>
+      <div class="sidebar-user-info">
+        <span class="sidebar-user-name" id="sidebar-user-name">Guest</span>
+        <span class="sidebar-user-status" id="sidebar-user-status">Not signed in</span>
+      </div>
+    </div>
+
+  </aside>
 
   <main id="top">
 
